@@ -1,54 +1,79 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { Form, Button, Alert } from 'react-bootstrap';
-import styles from './index.module.scss'
+import { Form, Button, Alert} from 'react-bootstrap';
+import styles from './index.module.scss';
 import { useNavigate } from 'react-router-dom';
-
-
-interface IFormInput {
-    email: string;
-    password: string;
-}
+import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks';
+import { loginUser, selectError } from '../../features/auth/authSlice';
+import FormInput from '../../components/FormInput';
+import { ILoginInput } from '../../types';
 
 const Login: React.FC = () => {
-    const navigate = useNavigate();
-    // const dispatch = useAppDispatch();
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-    } = useForm<IFormInput>();
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const backendError = useAppSelector(selectError);
+  const [backendErrorMessage, setBackendErrorMessage] = useState('');
+  useEffect(() => {
+    if (backendError) {
+      setBackendErrorMessage(backendError);
+    }
+  }, [backendError]);
 
-    const onSubmit: SubmitHandler<IFormInput> = async () => {}
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors },
+    clearErrors
+  } = useForm<ILoginInput>();
 
 
-    return (
-        <div className={styles.loginContainer}>
-            <h2>Login</h2>
-            <Form onSubmit={handleSubmit(onSubmit)}>
-                <Form.Group className={styles.formGroup} controlId="email">
-                    <Form.Label className={styles.formLabel}>Email</Form.Label>
-                    <Form.Control className={styles.formControl} type="email" {...register('email', { required: 'This field is required' })} />
-                    {errors.email && <Alert variant="danger">{errors.email.message}</Alert>}
-                </Form.Group>
+  const onSubmit: SubmitHandler<ILoginInput> = async (data) => {
+    try {
+      clearErrors();
+      await dispatch(loginUser(data)).unwrap();
+      navigate('/profile');
+    } catch (e) {
+      if (e instanceof Array) {
+        e.forEach((errorDetail) => {
+        setError(errorDetail.field, {
+        type: "manual",
+        message: errorDetail.constraints.join(" ")
+        });
+        });
+        } else {
+        console.error(e);
+        }
+    }
+  };
 
-                <Form.Group className={styles.formGroup} controlId="password">
-                    <Form.Label className={styles.formLabel}>Password</Form.Label>
-                    <Form.Control className={styles.formControl} type="password" {...register('password', { required: 'This field is required', minLength: { value: 6, message: 'Min length is 6 characters' }, maxLength: { value: 50, message: 'Max length is 50 characters' }, pattern: { value: /\d/, message: 'Password must contain at least one number' } })} />
-                    {errors.password && <Alert variant="danger">{errors.password.message}</Alert>}
-                </Form.Group>
 
-                <Button variant="primary" type="submit">
-                    Login
-                </Button>
-                <div className={styles.registerContainer}>
-                    <Button variant="link" className={styles.registerLink} onClick={() => navigate('/register')}>
-                        Dont have an account? Register
-                    </Button>
-                </div>
-            </Form>
-        </div>
-    );
+  return (
+    <div className={styles.loginContainer}>
+      <h2>Login</h2>
+      <Form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
+
+
+        <FormInput label="Email" name="email" error={errors.email} register={register} {...{ required: 'This field is required' }} />
+        <FormInput
+          label="Password"
+          name="password"
+          error={errors.password}
+          register={register}
+          {...{ required: 'This field is required', minLength: { value: 6, message: 'Min length is 6 characters' }, maxLength: { value: 50, message: 'Max length is 50 characters' }, pattern: { value: /\d/, message: 'Password must contain at least one number' } }}
+        />
+        <Button variant="primary" type="submit" className='mt-3'>
+          Login
+        </Button>
+      </Form>
+      {backendErrorMessage && <Alert variant="danger" className="text-danger m-3 custom-medium">{backendErrorMessage}</Alert>}
+      <div className={styles.registerLinkContainer}>
+        <Button variant="link" className={styles.registerLink} onClick={() => navigate('/register')}>
+          Create account
+        </Button>
+      </div>
+    </div>
+  );
 };
 
 export default Login;
