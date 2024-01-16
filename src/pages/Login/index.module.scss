@@ -1,0 +1,95 @@
+.loginContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px;
+    margin: 3rem auto;
+
+    h2 {
+        margin-bottom: 1.5rem;
+    }
+
+    .formGroup {
+        width: 100%;
+    }
+
+    .formLabel {
+        display: block;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+
+    .formControl {
+        display: block;
+        width: 100%;
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #495057;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
+        &:focus {
+            border-color: #80bdff;
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+        }
+
+        &.is-invalid {
+            border-color: #dc3545;
+        }
+    }
+
+    button {
+        width: 100%;
+        padding: 0.6rem 1.2rem;
+        font-size: 1.1rem;
+        font-weight: 500;
+        line-height: 1.2;
+        text-align: center;
+        vertical-align: middle;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+        color: #fff;
+        background-color: #007bff;
+        cursor: pointer;
+        transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
+        &:hover {
+            background-color: #0056b3;
+        }
+    }
+
+    .alert {
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+    }
+
+    .registerLinkContainer {
+        margin-top: 1.5rem;
+        text-align: center;
+    }
+
+    .registerLink {
+        color: #007bff;
+        text-decoration: none;
+        padding: 0;
+        background-color: transparent;
+        border: none;
+
+        &:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
+    }
+}
