@@ -88,7 +88,7 @@ const authSlice = createSlice({
         state.error = action.payload.message || 'An error occurred.';
       })
       .addCase(validateToken.fulfilled, (state, action: any) => {
-        state.isLogin = action.payload.isLogin;
+        state.isLogin = action.payload?.isLogin;
         state.validatingToken = false;
       })
       .addCase(validateToken.rejected, (state) => {
