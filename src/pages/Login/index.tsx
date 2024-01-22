@@ -4,7 +4,7 @@ import { Form, Button, Alert} from 'react-bootstrap';
 import styles from './index.module.scss';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks';
-import { loginUser, selectError } from '../../features/auth/authSlice';
+import { loginUser, resetError, selectError } from '../../features/auth/authSlice';
 import FormInput from '../../components/FormInput';
 import { ILoginInput } from '../../types';
 
@@ -19,12 +19,17 @@ const Login: React.FC = () => {
     }
   }, [backendError]);
 
+  useEffect(() => {
+    return () => {
+      dispatch(resetError());
+    };
+  }, [dispatch]);
+
   const {
     register,
     handleSubmit,
     setError,
     formState: { errors, isValid },
-    clearErrors
   } = useForm<ILoginInput>();
 
 
@@ -38,20 +43,19 @@ const Login: React.FC = () => {
     } catch (e) {
       if (e instanceof Array) {
         e.forEach((errorDetail) => {
-        setError(errorDetail.field, {
-        type: "manual",
-        message: errorDetail.constraints.join(" ")
-        });
+          setError(errorDetail.field, {
+            type: "manual",
+            message: errorDetail.constraints.join(" ")
+          });
         });
         } else {
-        console.error(e);
+         console.error(e);
         }
     }
   };
 
   const onRegister = () => {
-    clearErrors();
-    setBackendErrorMessage('');
+    dispatch(resetError());
     navigate('/register');
  };
 
