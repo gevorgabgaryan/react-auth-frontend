@@ -23,14 +23,16 @@ const Login: React.FC = () => {
     register,
     handleSubmit,
     setError,
-    formState: { errors },
+    formState: { errors, isValid },
     clearErrors
   } = useForm<ILoginInput>();
 
 
   const onSubmit: SubmitHandler<ILoginInput> = async (data) => {
     try {
-      clearErrors();
+      if (!isValid) {
+        return;
+      }
       await dispatch(loginUser(data)).unwrap();
       navigate('/profile');
     } catch (e) {
@@ -47,20 +49,25 @@ const Login: React.FC = () => {
     }
   };
 
+  const onRegister = () => {
+    clearErrors();
+    setBackendErrorMessage('');
+    navigate('/register');
+ };
+
 
   return (
     <div className={styles.loginContainer}>
       <h2>Login</h2>
       <Form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
 
-
-        <FormInput label="Email" name="email" error={errors.email} register={register} {...{ required: 'This field is required' }} />
+        <FormInput label="Email" name="email" error={errors.email} register={register} validation={{ required: 'This field is required' }} />
         <FormInput
           label="Password"
           name="password"
           error={errors.password}
           register={register}
-          {...{ required: 'This field is required', minLength: { value: 6, message: 'Min length is 6 characters' }, maxLength: { value: 50, message: 'Max length is 50 characters' }, pattern: { value: /\d/, message: 'Password must contain at least one number' } }}
+          validation={{ required: 'This field is required', minLength: { value: 6, message: 'Min length is 6 characters' }, maxLength: { value: 50, message: 'Max length is 50 characters' }, pattern: { value: /\d/, message: 'Password must contain at least one number' } }}
         />
         <Button variant="primary" type="submit" className='mt-3'>
           Login
@@ -68,7 +75,7 @@ const Login: React.FC = () => {
       </Form>
       {backendErrorMessage && <Alert variant="danger" className="text-danger m-3 custom-medium">{backendErrorMessage}</Alert>}
       <div className={styles.registerLinkContainer}>
-        <Button variant="link" className={styles.registerLink} onClick={() => navigate('/register')}>
+        <Button variant="link" className={styles.registerLink} onClick={onRegister}>
           Create account
         </Button>
       </div>
