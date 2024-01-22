@@ -23,3 +23,4 @@ const FormInput: React.FC<FormInputProps> = ({ label, error, register, name, typ
 };
 
 export default FormInput;
+

@@ -15,6 +15,7 @@ export interface IUserProfileResponse {
   firstName: string;
   lastName: string;
   fullName: string;
+  avatar: string;
   email: string;
   role: string;
   isActive: boolean;

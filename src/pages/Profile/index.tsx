@@ -29,6 +29,13 @@ const Profile: React.FC = () => {
   return (
     <div className={styles.profileContainer}>
         <LogoutButton />
+        <div className={styles.avatarContainer}>
+        <img
+          className={styles.avatar}
+          src={`${SERVER_URL}${userProfile.avatar}`}
+          alt="Avatar"
+        />
+      </div>
       <h1 className={styles.fullName}>{userProfile.fullName}</h1>
       <Swiper
         modules={[Navigation, Pagination, Scrollbar, A11y, Autoplay]}
@@ -36,7 +43,6 @@ const Profile: React.FC = () => {
         slidesPerView={1}
         navigation
         pagination={{ clickable: true }}
-        scrollbar={{ draggable: true }}
         onSlideChange={() => console.log('slide change')}
         autoplay={{ delay: 2500 }}
       >

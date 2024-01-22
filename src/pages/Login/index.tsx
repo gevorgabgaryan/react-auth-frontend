@@ -4,7 +4,7 @@ import { Form, Button, Alert} from 'react-bootstrap';
 import styles from './index.module.scss';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks';
-import { loginUser, selectError } from '../../features/auth/authSlice';
+import { loginUser, resetError, selectError } from '../../features/auth/authSlice';
 import FormInput from '../../components/FormInput';
 import { ILoginInput } from '../../types';
 
@@ -19,33 +19,45 @@ const Login: React.FC = () => {
     }
   }, [backendError]);
 
+  useEffect(() => {
+    return () => {
+      dispatch(resetError());
+    };
+  }, [dispatch]);
+
   const {
     register,
     handleSubmit,
     setError,
-    formState: { errors },
-    clearErrors
+    formState: { errors, isValid },
   } = useForm<ILoginInput>();
 
 
   const onSubmit: SubmitHandler<ILoginInput> = async (data) => {
     try {
-      clearErrors();
+      if (!isValid) {
+        return;
+      }
       await dispatch(loginUser(data)).unwrap();
       navigate('/profile');
     } catch (e) {
       if (e instanceof Array) {
         e.forEach((errorDetail) => {
-        setError(errorDetail.field, {
-        type: "manual",
-        message: errorDetail.constraints.join(" ")
-        });
+          setError(errorDetail.field, {
+            type: "manual",
+            message: errorDetail.constraints.join(" ")
+          });
         });
         } else {
-        console.error(e);
+         console.error(e);
         }
     }
   };
+
+  const onRegister = () => {
+    dispatch(resetError());
+    navigate('/register');
+ };
 
 
   return (
@@ -53,14 +65,13 @@ const Login: React.FC = () => {
       <h2>Login</h2>
       <Form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
 
-
-        <FormInput label="Email" name="email" error={errors.email} register={register} {...{ required: 'This field is required' }} />
+        <FormInput label="Email" name="email" error={errors.email} register={register} validation={{ required: 'This field is required' }} />
         <FormInput
           label="Password"
           name="password"
           error={errors.password}
           register={register}
-          {...{ required: 'This field is required', minLength: { value: 6, message: 'Min length is 6 characters' }, maxLength: { value: 50, message: 'Max length is 50 characters' }, pattern: { value: /\d/, message: 'Password must contain at least one number' } }}
+          validation={{ required: 'This field is required', minLength: { value: 6, message: 'Min length is 6 characters' }, maxLength: { value: 50, message: 'Max length is 50 characters' }, pattern: { value: /\d/, message: 'Password must contain at least one number' } }}
         />
         <Button variant="primary" type="submit" className='mt-3'>
           Login
@@ -68,7 +79,7 @@ const Login: React.FC = () => {
       </Form>
       {backendErrorMessage && <Alert variant="danger" className="text-danger m-3 custom-medium">{backendErrorMessage}</Alert>}
       <div className={styles.registerLinkContainer}>
-        <Button variant="link" className={styles.registerLink} onClick={() => navigate('/register')}>
+        <Button variant="link" className={styles.registerLink} onClick={onRegister}>
           Create account
         </Button>
       </div>

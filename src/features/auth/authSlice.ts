@@ -61,6 +61,9 @@ const authSlice = createSlice({
       state.error = null;
       state.loading = false;
     },
+    resetError: (state) => {
+      state.error = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -105,3 +108,4 @@ export default authSlice.reducer;
 
 export const selectLoading = (state: RootState) => state.auth.loading;
 export const selectError = (state: RootState) => state.auth.error;
+export const { resetError } = authSlice.actions;
